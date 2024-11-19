@@ -7,7 +7,8 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     private Rigidbody2D playerRigidbody;
-    float MovementSpeed = 3;
+    float MovementSpeed = 8, JumpSpeed = 70;
+
     bool isGrounded;
 
     // Start is called before the first frame update
@@ -19,30 +20,42 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //move left
         Vector2 movementDirection = Vector2.zero;
         if (Input.GetKey("a"))
         {
             movementDirection.x = -MovementSpeed;
         }
+        //move right
         else if (Input.GetKey("d"))
-            {
-                movementDirection.x = MovementSpeed;
+        {
+            movementDirection.x = MovementSpeed;
+        }
+        //stops movement of player
+        else if (Input.GetKeyUp("a") || Input.GetKeyUp("d"))
+        {
+            movementDirection.x = 0;
+        }
+        //actually moves the player
+        playerRigidbody.linearVelocity = (movementDirection);
 
-            }
-        else if (Input.GetKey("w") && isGrounded)
-            {
-                playerRigidbody.AddForceY(1,ForceMode2D.Impulse);
-                movementDirection.x = 0;
-            }
-        playerRigidbody.AddForce((movementDirection), ForceMode2D.Force);
+        /*jump if on ground
+         * stop moving on x plane
+         */
+        if (Input.GetKey("w") && isGrounded)
+        {
+            playerRigidbody.AddForceY(JumpSpeed, ForceMode2D.Impulse);
+            movementDirection.x = 0;
+        }
     }
     //Test if player is touching ground
     private void OnCollisionEnter2D(Collision2D other)
     {
+        //checks if on ground and stops sliding
         if (other.gameObject.CompareTag("Floor"))
         {
             isGrounded = true;
-            playerRigidbody.angularVelocity = 0;
+            playerRigidbody.linearVelocityX = 0;
         }
 
     }
