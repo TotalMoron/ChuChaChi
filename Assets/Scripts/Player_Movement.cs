@@ -10,7 +10,7 @@ public class Player : MonoBehaviour
     public float MovementSpeed, JumpSpeed;
 
     bool isGrounded, isJumpDelayed;
-    int jumpCounter, jumpDelay = 4;
+    int jumpCounter, jumpDelay = 5;
 
     // Start is called before the first frame update
     void Start()
@@ -33,7 +33,7 @@ public class Player : MonoBehaviour
             movementDirection.x = MovementSpeed;
         }
         //stops movement of player
-        else if (Input.GetKeyUp("a") || Input.GetKeyUp("d"))
+        if (Input.GetKeyUp("a") || Input.GetKeyUp("d"))
         {
             movementDirection.x = 0;
         }
@@ -51,8 +51,9 @@ public class Player : MonoBehaviour
          * delay for jumpDelay frames
          * jump player when delay is over.
          */
-        if (isJumpDelayed == true)
+        if (isJumpDelayed == true && isGrounded == true)
         {
+            jumpCounter++;
             if (jumpCounter > jumpDelay)
             {
                 playerRigidbody.AddForceY(JumpSpeed, ForceMode2D.Impulse);
@@ -60,7 +61,6 @@ public class Player : MonoBehaviour
                 jumpCounter = 0;
             }
             movementDirection.x = 0;
-            jumpCounter++;
         }
     }
 
