@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -8,6 +9,8 @@ public class Player : MonoBehaviour
 {
     private Rigidbody2D playerRigidbody;
     public float MovementSpeed, JumpSpeed;
+    Animator animator;
+    float MovementSpeed = 8, JumpSpeed = 70;
 
     bool isGrounded, isJumpDelayed;
     int jumpCounter, jumpDelay = 4;
@@ -16,26 +19,30 @@ public class Player : MonoBehaviour
     void Start()
     {
         playerRigidbody = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        //move left
         Vector2 movementDirection = Vector2.zero;
+        //move left
         if (Input.GetKey("a"))
         {
             movementDirection.x = -MovementSpeed;
+            animator.SetFloat("Movement_State",movementDirection.x);        
         }
         //move right
         else if (Input.GetKey("d"))
         {
             movementDirection.x = MovementSpeed;
+            animator.SetFloat("Movement_State",movementDirection.x);
         }
         //stops movement of player
         else if (Input.GetKeyUp("a") || Input.GetKeyUp("d"))
         {
             movementDirection.x = 0;
+            animator.SetFloat("Movement_State",0);
         }
         /*start jump delay if on ground
          * stop moving on x plane
@@ -59,6 +66,8 @@ public class Player : MonoBehaviour
                 isJumpDelayed = false;
                 jumpCounter = 0;
             }
+            //playerRigidbody.AddForceY(JumpSpeed, ForceMode2D.Impulse);
+            playerRigidbody.linearVelocityY = JumpSpeed;
             movementDirection.x = 0;
             jumpCounter++;
         }
