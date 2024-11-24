@@ -7,9 +7,10 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     private Rigidbody2D playerRigidbody;
-    float MovementSpeed = 8, JumpSpeed = 70;
+    public float MovementSpeed, JumpSpeed;
 
-    bool isGrounded;
+    bool isGrounded, isJumpDelayed;
+    int jumpCounter, jumpDelay = 4;
 
     // Start is called before the first frame update
     void Start()
@@ -36,18 +37,33 @@ public class Player : MonoBehaviour
         {
             movementDirection.x = 0;
         }
-        //actually moves the player
-        playerRigidbody.linearVelocity = (movementDirection);
-
-        /*jump if on ground
+        /*start jump delay if on ground
          * stop moving on x plane
          */
         if (Input.GetKey("w") && isGrounded)
         {
-            playerRigidbody.AddForceY(JumpSpeed, ForceMode2D.Impulse);
+            isJumpDelayed = true;
+        }
+        //actually moves the player
+        playerRigidbody.linearVelocity = (movementDirection);
+
+        /*check if jump delay is on
+         * delay for jumpDelay frames
+         * jump player when delay is over.
+         */
+        if (isJumpDelayed == true)
+        {
+            if (jumpCounter > jumpDelay)
+            {
+                playerRigidbody.AddForceY(JumpSpeed, ForceMode2D.Impulse);
+                isJumpDelayed = false;
+                jumpCounter = 0;
+            }
             movementDirection.x = 0;
+            jumpCounter++;
         }
     }
+
     //Test if player is touching ground
     private void OnCollisionEnter2D(Collision2D other)
     {
