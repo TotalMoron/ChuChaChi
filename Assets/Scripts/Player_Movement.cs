@@ -22,21 +22,17 @@ public class Player : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    { 
+    {
         Vector2 movementDirection = Vector2.zero;
-        
         //move left
-       
         if (Input.GetKey("a"))
         {
-           
             movementDirection.x = -MovementSpeed;
             animator.SetFloat("Movement_State",movementDirection.x);        
         }
         //move right
         else if (Input.GetKey("d"))
         {
-            
             movementDirection.x = MovementSpeed;
             animator.SetFloat("Movement_State",movementDirection.x);
         }
