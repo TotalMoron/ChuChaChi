@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -7,42 +8,65 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     private Rigidbody2D playerRigidbody;
-    float MovementSpeed = 3;
+    Animator animator;
+    float MovementSpeed = 8, JumpSpeed = 70;
+
     bool isGrounded;
 
     // Start is called before the first frame update
     void Start()
     {
         playerRigidbody = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
     }
 
     // Update is called once per frame
     void Update()
-    {
+    { 
         Vector2 movementDirection = Vector2.zero;
+        
+        //move left
+       
         if (Input.GetKey("a"))
         {
+           
             movementDirection.x = -MovementSpeed;
+            animator.SetFloat("Movement_State",movementDirection.x);        
         }
+        //move right
         else if (Input.GetKey("d"))
-            {
-                movementDirection.x = MovementSpeed;
+        {
+            
+            movementDirection.x = MovementSpeed;
+            animator.SetFloat("Movement_State",movementDirection.x);
+        }
+        //stops movement of player
+        else if (Input.GetKeyUp("a") || Input.GetKeyUp("d"))
+        {
+            movementDirection.x = 0;
+            animator.SetFloat("Movement_State",0);
+        }
+        //actually moves the player
+        playerRigidbody.linearVelocity = (movementDirection);
 
-            }
-        else if (Input.GetKey("w") && isGrounded)
-            {
-                playerRigidbody.AddForceY(1,ForceMode2D.Impulse);
-                movementDirection.x = 0;
-            }
-        playerRigidbody.AddForce((movementDirection), ForceMode2D.Force);
+        /*jump if on ground
+         * stop moving on x plane
+         */
+        if (Input.GetKey("w") && isGrounded)
+        {
+            //playerRigidbody.AddForceY(JumpSpeed, ForceMode2D.Impulse);
+            playerRigidbody.linearVelocityY = JumpSpeed;
+            movementDirection.x = 0;
+        }
     }
     //Test if player is touching ground
     private void OnCollisionEnter2D(Collision2D other)
     {
+        //checks if on ground and stops sliding
         if (other.gameObject.CompareTag("Floor"))
         {
             isGrounded = true;
-            playerRigidbody.angularVelocity = 0;
+            playerRigidbody.linearVelocityX = 0;
         }
 
     }
