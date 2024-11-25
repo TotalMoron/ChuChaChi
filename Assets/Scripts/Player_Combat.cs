@@ -9,6 +9,8 @@ public class Player_Combat : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public Animator animator;
+    private float pos;
+    private UnityEngine.Vector3 Ppos, Npos;
 
     public Transform attackPoint;
     public LayerMask enemyLayers;
@@ -19,80 +21,64 @@ public class Player_Combat : MonoBehaviour
 
     [SerializeField] GameObject hitBox;
 
+    void Start()
+    {
+        pos = attackPoint.position.x;
+        Ppos = new UnityEngine.Vector3(attackPoint.localPosition.x, attackPoint.localPosition.y, attackPoint.localPosition.z);
+        Npos = new UnityEngine.Vector3(-attackPoint.localPosition.x, attackPoint.localPosition.y, attackPoint.localPosition.z);
+    }
+
     // Update is called once per frame
     void Update()
     {
-        
-    
-        if(Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            hitBox.SetActive(true) ;
-            Debug.Log("Status of hitbox  = true");
-            HeavyAttack();
+            hitBox.SetActive(true);
+            Attack(attackPoint, attackRange, heavyAttack);
             hitBox.SetActive(false);
-            Debug.Log("Status of hitbox = false" );
         }
-        else if(Input.GetKeyDown(KeyCode.Q))
+        else if (Input.GetKeyDown(KeyCode.Q))
         {
             hitBox.SetActive(true);
-            MediumAttack();
-             hitBox.SetActive(false);
+            Attack(attackPoint, attackRange, mediumAttack);
+            hitBox.SetActive(false);
         }
-        else if(Input.GetKeyDown(KeyCode.E))
+        else if (Input.GetKeyDown(KeyCode.E))
         {
             hitBox.SetActive(true);
-            LightAttack();
-             hitBox.SetActive(false);
+            Attack(attackPoint, attackRange, lightAttack);
+            hitBox.SetActive(false);
+        }
+
+        //match attack point position to Octavia's direction
+        if (attackPoint.parent.gameObject.GetComponent<Rigidbody2D>().linearVelocity.x < 0)
+        {
+            attackPoint.localPosition = Npos;
+        }
+        if (attackPoint.parent.gameObject.GetComponent<Rigidbody2D>().linearVelocity.x > 0)
+        {
+            attackPoint.localPosition = Ppos;
         }
     }
-    void HeavyAttack()
+
+    void Attack(Transform pos, float range, int damage)
     {
-        
-    // play attack animation
-        //animator.SetTrigger("HeavyAttack");
-    // detect enemies in attack 
-        Collider2D[]  hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position,attackRange,enemyLayers);
-        foreach(Collider2D enemy in hitEnemies)
+        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(pos.position, range, enemyLayers);
+        foreach (Collider2D enemy in hitEnemies)
         {
             Debug.Log("We hit " + enemy.name);
-            enemy.GetComponent<Enemy_Damage>().TakeDamage(heavyAttack);
+            enemy.GetComponent<Enemy_Damage>().TakeDamage(damage, (int)pos.localPosition.x);
         }
-        // apply damage
     }
-    void MediumAttack()
+    void AttackAnimation(/*whatever is needed to animate*/)
     {
-        
-    // play attack animation
-        //animator.SetTrigger("MediumAttack");
-        
-    // detect enemies in attack 
-        Collider2D[]  hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position,attackRange,enemyLayers);
-        foreach(Collider2D enemy in hitEnemies)
-        {
-            Debug.Log("We hit " + enemy.name);
-            enemy.GetComponent<Enemy_Damage>().TakeDamage(mediumAttack);
-        }
-        // apply damage
+        // add animation code
     }
-    void LightAttack()
-    {
-        
-    // play attack animation
-        //animator.SetTrigger("lightAttack");
-        
-    // detect enemies in attack 
-        Collider2D[]  hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position,attackRange,enemyLayers);
-        foreach(Collider2D enemy in hitEnemies)
-        {
-            Debug.Log("We hit " + enemy.name);
-            enemy.GetComponent<Enemy_Damage>().TakeDamage(lightAttack);
-        }
-        // apply damage
-    }
+
     void OnDrawGizmosSelected()
     {
-        if(attackPoint == null)
+        if (attackPoint == null)
             return;
-        Gizmos.DrawWireSphere(attackPoint.position,attackRange);
+        Gizmos.DrawWireSphere(attackPoint.position, attackRange);
     }
 }
