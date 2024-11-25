@@ -7,78 +7,97 @@ using System.Numerics;
 
 public class Player_Combat : MonoBehaviour
 {
+    public Enemy_Damage enemyDamage;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    public Animator animator;
-    private float pos;
-    private UnityEngine.Vector3 Ppos, Npos;
+   // public Animator animator;
 
     public Transform attackPoint;
     public LayerMask enemyLayers;
-    public int heavyAttack = 20;
-    public int mediumAttack = 10;
-    public int lightAttack = 5;
+    public int heavy_attack = 20;
+    public int medium_attack = 10;
+    public int light_attack = 5;
     public float attackRange = 0.5f;
 
     [SerializeField] GameObject hitBox;
 
-    void Start()
-    {
-        pos = attackPoint.position.x;
-        Ppos = new UnityEngine.Vector3(attackPoint.localPosition.x, attackPoint.localPosition.y, attackPoint.localPosition.z);
-        Npos = new UnityEngine.Vector3(-attackPoint.localPosition.x, attackPoint.localPosition.y, attackPoint.localPosition.z);
-    }
-
+ 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        
+        // Creates Heavy attack hitbox
+        if(Input.GetKeyDown(KeyCode.Space))
+        {
+            hitBox.SetActive(true) ;
+            Debug.Log("Status of hitbox  = true");
+            HeavyAttack();
+            hitBox.SetActive(false);
+            Debug.Log("Status of hitbox = false" );
+        }
+        // Creates Medium attack 
+        else if(Input.GetKeyDown(KeyCode.Q))
         {
             hitBox.SetActive(true);
-            Attack(attackPoint, attackRange, heavyAttack);
-            hitBox.SetActive(false);
+            MediumAttack();
+             hitBox.SetActive(false);
         }
-        else if (Input.GetKeyDown(KeyCode.Q))
+        else if(Input.GetKeyDown(KeyCode.E))
         {
+            // Creates light attack 
             hitBox.SetActive(true);
-            Attack(attackPoint, attackRange, mediumAttack);
-            hitBox.SetActive(false);
-        }
-        else if (Input.GetKeyDown(KeyCode.E))
-        {
-            hitBox.SetActive(true);
-            Attack(attackPoint, attackRange, lightAttack);
-            hitBox.SetActive(false);
-        }
-
-        //match attack point position to Octavia's direction
-        if (attackPoint.parent.gameObject.GetComponent<Rigidbody2D>().linearVelocity.x < 0)
-        {
-            attackPoint.localPosition = Npos;
-        }
-        if (attackPoint.parent.gameObject.GetComponent<Rigidbody2D>().linearVelocity.x > 0)
-        {
-            attackPoint.localPosition = Ppos;
+            LightAttack();
+             hitBox.SetActive(false);
         }
     }
-
-    void Attack(Transform pos, float range, int damage)
+    void HeavyAttack()
     {
-        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(pos.position, range, enemyLayers);
-        foreach (Collider2D enemy in hitEnemies)
+
+    // play attack animation
+        //animator.SetTrigger("HeavyAttack");
+    // detect enemies in attack 
+        Collider2D[]  hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position,attackRange,enemyLayers);
+        foreach(Collider2D enemy in hitEnemies)
         {
             Debug.Log("We hit " + enemy.name);
-            enemy.GetComponent<Enemy_Damage>().TakeDamage(damage, (int)pos.localPosition.x);
+            enemy.GetComponent<Enemy_Damage>().TakeDamage(heavy_attack);
         }
+        // apply damage
     }
-    void AttackAnimation(/*whatever is needed to animate*/)
+    void MediumAttack()
     {
-        // add animation code
+        
+    // play attack animation
+        //animator.SetTrigger("MediumAttack");
+        
+    // detect enemies in attack 
+        Collider2D[]  hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position,attackRange,enemyLayers);
+        foreach(Collider2D enemy in hitEnemies)
+        {
+            Debug.Log("We hit " + enemy.name);
+            enemy.GetComponent<Enemy_Damage>().TakeDamage(medium_attack);
+        }
+        // apply damage
     }
-
+    void LightAttack()
+    {
+        
+    // play attack animation
+        //animator.SetTrigger("lightAttack");
+        
+    // detect enemies in attack 
+        Collider2D[]  hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position,attackRange,enemyLayers);
+        foreach(Collider2D enemy in hitEnemies)
+        {
+            Debug.Log("We hit " + enemy.name);
+            enemy.GetComponent<Enemy_Damage>().TakeDamage(light_attack);
+        }
+        // apply damage
+    }
+    // creates visual of attack range
     void OnDrawGizmosSelected()
     {
-        if (attackPoint == null)
+        if(attackPoint == null)
             return;
-        Gizmos.DrawWireSphere(attackPoint.position, attackRange);
+        Gizmos.DrawWireSphere(attackPoint.position,attackRange);
     }
 }
