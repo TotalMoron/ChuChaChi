@@ -8,10 +8,11 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     private Rigidbody2D playerRigidbody;
+    public float MovementSpeed, JumpSpeed;
     Animator animator;
-    float MovementSpeed = 8, JumpSpeed = 70;
 
-    bool isGrounded;
+    bool isGrounded, isJumpDelayed;
+    int jumpCounter, jumpDelay = 3;
 
     // Start is called before the first frame update
     void Start()
@@ -28,7 +29,7 @@ public class Player : MonoBehaviour
         if (Input.GetKey("a"))
         {
             movementDirection.x = -MovementSpeed;
-            animator.SetFloat("Movement_State",movementDirection.x);        
+            animator.SetFloat("Movement_State",movementDirection.x);
         }
         //move right
         else if (Input.GetKey("d"))
@@ -37,24 +38,38 @@ public class Player : MonoBehaviour
             animator.SetFloat("Movement_State",movementDirection.x);
         }
         //stops movement of player
-        else if (Input.GetKeyUp("a") || Input.GetKeyUp("d"))
+        if (Input.GetKeyUp("a") || Input.GetKeyUp("d"))
         {
             movementDirection.x = 0;
             animator.SetFloat("Movement_State",0);
         }
-        //actually moves the player
-        playerRigidbody.linearVelocity = (movementDirection);
-
-        /*jump if on ground
+        /*start jump delay if on ground
          * stop moving on x plane
          */
         if (Input.GetKey("w") && isGrounded)
         {
-            //playerRigidbody.AddForceY(JumpSpeed, ForceMode2D.Impulse);
-            playerRigidbody.linearVelocityY = JumpSpeed;
+            isJumpDelayed = true;
+        }
+        //actually moves the player
+        playerRigidbody.linearVelocity = (movementDirection);
+
+        /*check if jump delay is on
+         * delay for jumpDelay frames
+         * jump player when delay is over.
+         */
+        if (isJumpDelayed == true && isGrounded == true)
+        {
+            jumpCounter++;
+            if (jumpCounter > jumpDelay)
+            {
+                playerRigidbody.AddForceY(JumpSpeed, ForceMode2D.Impulse);
+                isJumpDelayed = false;
+                jumpCounter = 0;
+            }
             movementDirection.x = 0;
         }
     }
+
     //Test if player is touching ground
     private void OnCollisionEnter2D(Collision2D other)
     {
