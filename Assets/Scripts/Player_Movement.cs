@@ -10,10 +10,9 @@ public class Player : MonoBehaviour
     private Rigidbody2D playerRigidbody;
     public float MovementSpeed, JumpSpeed;
     Animator animator;
-    float MovementSpeed = 8, JumpSpeed = 70;
 
     bool isGrounded, isJumpDelayed;
-    int jumpCounter, jumpDelay = 5;
+    int jumpCounter, jumpDelay = 3;
 
     // Start is called before the first frame update
     void Start()
@@ -30,7 +29,7 @@ public class Player : MonoBehaviour
         if (Input.GetKey("a"))
         {
             movementDirection.x = -MovementSpeed;
-            animator.SetFloat("Movement_State",movementDirection.x);        
+            animator.SetFloat("Movement_State",movementDirection.x);
         }
         //move right
         else if (Input.GetKey("d"))
@@ -67,8 +66,6 @@ public class Player : MonoBehaviour
                 isJumpDelayed = false;
                 jumpCounter = 0;
             }
-            //playerRigidbody.AddForceY(JumpSpeed, ForceMode2D.Impulse);
-            playerRigidbody.linearVelocityY = JumpSpeed;
             movementDirection.x = 0;
         }
     }
