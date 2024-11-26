@@ -12,7 +12,7 @@ public class Player : MonoBehaviour
     Animator animator;
 
     bool isGrounded, isJumpDelayed;
-    int jumpCounter, jumpDelay = 3;
+    int jumpCounter, jumpDelay = 4;
 
     // Start is called before the first frame update
     void Start()
@@ -22,7 +22,7 @@ public class Player : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         Vector2 movementDirection = Vector2.zero;
         //move left
@@ -78,6 +78,8 @@ public class Player : MonoBehaviour
         {
             isGrounded = true;
             playerRigidbody.linearVelocityX = 0;
+            jumpCounter = 0;
+            isJumpDelayed = false;
         }
 
     }

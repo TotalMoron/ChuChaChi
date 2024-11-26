@@ -22,7 +22,7 @@ public class Enemy_Movement : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         Vector2 movementDirection = Vector2.zero;
         //move left
