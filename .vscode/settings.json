@@ -56,5 +56,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "chuchachi.sln"
+    "dotnet.defaultSolution": "ChuChaChi.sln"
 }
