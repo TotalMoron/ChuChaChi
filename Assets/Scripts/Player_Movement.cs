@@ -8,10 +8,11 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     private Rigidbody2D playerRigidbody;
+    public float MovementSpeed, JumpSpeed;
     Animator animator;
-    float MovementSpeed = 8, JumpSpeed = 100;
 
-    bool isGrounded;
+    bool isGrounded, isJumpDelayed;
+    int jumpCounter, jumpDelay = 4;
 
     // Start is called before the first frame update
     void Start()
@@ -21,59 +22,64 @@ public class Player : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
-    { 
+    void FixedUpdate()
+    {
         Vector2 movementDirection = Vector2.zero;
-        
         //move left
-       
         if (Input.GetKey("a"))
         {
-           
             movementDirection.x = -MovementSpeed;
-            animator.SetFloat("Movement_State",movementDirection.x);        
+            animator.SetFloat("Movement_State",1);
         }
         //move right
         else if (Input.GetKey("d"))
         {
-            
             movementDirection.x = MovementSpeed;
-            animator.SetFloat("Movement_State",movementDirection.x);
+            animator.SetFloat("Movement_State",-1);
         }
         //stops movement of player
-        else if (Input.GetKeyUp("a") || Input.GetKeyUp("d"))
+        if (Input.GetKeyUp("a") || Input.GetKeyUp("d"))
         {
             movementDirection.x = 0;
             animator.SetFloat("Movement_State",0);
         }
-        //actually moves the player
-        playerRigidbody.linearVelocity = (movementDirection);
-
-        /*jump if on ground
+        /*start jump delay if on ground
          * stop moving on x plane
          */
         if (Input.GetKey("w") && isGrounded)
         {
-            playerRigidbody.AddForceY(JumpSpeed, ForceMode2D.Impulse);
-            animator.SetBool("IsJumping",true);
-            //playerRigidbody.linearVelocityY = JumpSpeed;
+            isJumpDelayed = true;
+        }
+        //actually moves the player
+        playerRigidbody.transform.position = playerRigidbody.transform.position + new Vector3(movementDirection.x,0,0);
+
+        /*check if jump delay is on
+         * delay for jumpDelay frames
+         * jump player when delay is over.
+         */
+        if (isJumpDelayed == true && isGrounded == true)
+        {
+            jumpCounter++;
+            if (jumpCounter > jumpDelay)
+            {
+                playerRigidbody.AddForceY(JumpSpeed, ForceMode2D.Impulse);
+                isJumpDelayed = false;
+                jumpCounter = 0;
+            }
             movementDirection.x = 0;
-            
-            
         }
     }
+
     //Test if player is touching ground
     private void OnCollisionEnter2D(Collision2D other)
     {
         //checks if on ground and stops sliding
         if (other.gameObject.CompareTag("Floor"))
         {
-            animator.SetFloat("Movement_state",0);
-            animator.SetBool("IsJumping",false);
-            animator.SetFloat("yVelocity",1);
             isGrounded = true;
             playerRigidbody.linearVelocityX = 0;
-            
+            jumpCounter = 0;
+            isJumpDelayed = false;
         }
 
     }
